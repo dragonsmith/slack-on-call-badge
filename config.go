@@ -38,6 +38,15 @@ func checkConfig() {
 	if onCallText == "" {
 		onCallText = "on call"
 	}
+
+	if *debug {
+		log.Println("DEBUG: SLACK_TOKEN", slackToken)
+		log.Println("DEBUG: OPSGENIE_TOKEN", genieToken)
+		log.Println("DEBUG: OPSGENIE_ROTATION", rotationName)
+		log.Println("DEBUG: ADMINS", adminsEnv)
+		log.Println("DEBUG: ON_CALL_ICON", onCallIcon)
+		log.Println("DEBUG: ON_CALL_TEXT", onCallText)
+	}
 }
 
 func parseUsers(users string) map[string]adminAccount {
@@ -50,7 +59,7 @@ func parseUsers(users string) map[string]adminAccount {
 		if len(splitUser) != 2 {
 			log.Println("\"ADMINS\" variable contain malformed string.")
 			log.Println("Please format is like that:")
-			log.Fatalln("\tUser1_OpsGenie_email:User1_Slack_id,User2_OpsGenie_email:User2_Slack_id,...\n")
+			log.Fatalln("\tUser1_OpsGenie_email:User1_Slack_id,User2_OpsGenie_email:User2_Slack_id,...")
 		}
 
 		parsedUsers[splitUser[0]] = adminAccount{slackID: splitUser[1]}

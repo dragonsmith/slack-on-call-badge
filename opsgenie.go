@@ -34,11 +34,21 @@ func whoIsOnCallOpsGenie(token string, schedule string, admins map[string]adminA
 		log.Fatalln(err)
 	}
 
-	for _, arg := range parsedJSON.Participants {
-		email := arg.Name
-		if data, ok := admins[email]; ok {
-			data.genieOnCall = true
-			admins[email] = data
+	if *debug {
+		log.Println("DEBUG: Raw data from OpsGenie")
+		log.Println("DEBUG:", parsedJSON.Participants)
+	}
+
+	for emailFromConfig, dataFromConfig := range admins {
+		oncall := false
+
+		for _, adminFromGenie := range parsedJSON.Participants {
+			if emailFromConfig == adminFromGenie.Name {
+				oncall = true
+			}
 		}
+
+		dataFromConfig.genieOnCall = oncall
+		admins[emailFromConfig] = dataFromConfig
 	}
 }

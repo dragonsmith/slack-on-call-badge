@@ -24,9 +24,11 @@ And optional:
 * `ON_CALL_ICON` - Slack icon name to use as a status icon. Default: `:on_call:`
 * `ON_CALL_TEXT` - Slack status text to use. Default: `on call`
 
-It has only one meaningful command line option:
+Command line options for debugging & testing:
 
 * `--once` - Make program to check and set status badges once and exit.
+* `--debug` - Make output more verbose.
+* `--dru-run` - Do not actually set Slack status.
 
 ## Example
 

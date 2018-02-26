@@ -21,14 +21,26 @@ var (
 	admins = parseUsers(adminsEnv)
 
 	runOnce = kingpin.Flag("once", "Run once instead staying in foreground with periodic checks").Bool()
+	debug   = kingpin.Flag("debug", "Enable debug output").Bool()
+	dryRun  = kingpin.Flag("dry-run", "Disable actual changes, only simulate them.").Bool()
 )
 
 func checkAndUpdate() {
+	if *debug {
+		log.Println("DEBUG: Updating status:")
+	}
+
 	// Fill OpsGenie on duty flag inside "admins" map
 	whoIsOnCallOpsGenie(genieToken, rotationName, admins)
 
 	// Fill Slack on duty flag inside "admins" map
 	whoIsOnCallSlack(slackToken, admins)
+
+	if *debug {
+		for email, data := range admins {
+			log.Println("DEBUG: Admin:", email, "OpsGenie:", data.genieOnCall, "Slack", data.slackOnCall)
+		}
+	}
 
 	for email, data := range admins {
 		if data.genieOnCall && !data.slackOnCall {
@@ -44,7 +56,7 @@ func checkAndUpdate() {
 }
 
 func main() {
-	kingpin.Version("0.0.1")
+	kingpin.Version("0.0.2")
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
 

@@ -55,10 +55,8 @@ func whoIsOnCallSlack(token string, admins map[string]adminAccount) {
 			log.Fatalln(err)
 		}
 
-		if adminStatus.StatusEmoji == onCallIcon {
-			data.slackOnCall = true
-			admins[email] = data
-		}
+		data.slackOnCall = (adminStatus.StatusEmoji == onCallIcon)
+		admins[email] = data
 	}
 }
 
@@ -75,8 +73,12 @@ func setSlackStatus(token string, user string, badge string, text string) {
 	headers["Content-type"] = "application/json;charset=utf-8"
 	headers["Authorization"] = bearerToken
 
-	postErr := httpPostJSON(apiURL, newProfile, headers)
-	if postErr != nil {
-		log.Fatalln(postErr)
+	if *dryRun {
+		log.Println("Dummy http request to set Slack Status:", user, badge, text)
+	} else {
+		postErr := httpPostJSON(apiURL, newProfile, headers)
+		if postErr != nil {
+			log.Fatalln(postErr)
+		}
 	}
 }
