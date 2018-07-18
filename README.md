@@ -8,6 +8,22 @@ It is designed to run indefinitely inside docker container.
 
 This is an alpha release. Use it on your own risk. If you liked it and/or see how it can be improved, please help me with your Pull Request. Thank you!
 
+## Installation
+
+### You can download a prepared image from Docker Hub
+
+```shell
+docker pull dragonsmith/slack-on-call-badge:0.0.3
+```
+
+### Or you can build a binary from sources
+
+```shell
+go get github.com/dragonsmith/slack-on-call-badge
+cd $GOPATH/github.com/dragonsmith/slack-on-call-badge
+make build
+```
+
 ## Configuration
 
 The configuration is done via ENV variables.
@@ -39,22 +55,13 @@ docker run --name slack-on-call-badge \
  -e SLACK_TOKEN=changeme \
  -e OPSGENIE_TOKEN=changeme \
  -e OPSGENIE_ROTATION=changeme \
- -e ADMINS="User1_OpsGenie_email:User1_Slack_id,User2_OpsGenie_email:User2_Slack_id" dragonsmith/slack-on-call-badge
+ -e ADMINS="User1_OpsGenie_email:User1_Slack_id,User2_OpsGenie_email:User2_Slack_id" dragonsmith/slack-on-call-badge:0.0.3
 ```
 
 To see its logs:
 
 ```shell
 docker logs slack-on-call-badge
-```
-
-## Build
-
-To build this code run:
-
-```shell
-go get github.com/dragonsmith/slack-on-call-badge
-make build
 ```
 
 ## Sponsor

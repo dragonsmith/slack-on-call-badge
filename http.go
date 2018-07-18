@@ -5,26 +5,47 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
 
-func httpGet(url string) ([]byte, error) {
-	var response []byte
+func httpGet(url string, headers map[string]string) ([]byte, error) {
+	var (
+		body []byte
+		resp *http.Response
+	)
 
-	resp, err := http.Get(url)
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return response, err
+		return body, err
 	}
 
-	response, err = ioutil.ReadAll(resp.Body)
+	for name, value := range headers {
+		req.Header.Add(name, value)
+	}
+
+	resp, err = client.Do(req)
 	if err != nil {
-		return response, err
+		return body, err
+	}
+
+	if resp.StatusCode != 200 {
+		errormsg := "Error during HTTP GET to OpsGenie API: %d %s"
+		return body, errors.New(fmt.Sprintf(errormsg, resp.StatusCode, http.StatusText(resp.StatusCode)))
+	}
+
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return body, err
 	}
 
 	err = resp.Body.Close()
 
-	return response, err
+	return body, err
 }
 
 func httpPostJSON(url string, data interface{}, headers map[string]string) error {

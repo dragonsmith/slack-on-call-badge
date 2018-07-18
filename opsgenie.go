@@ -10,21 +10,24 @@ import (
 )
 
 const (
-	opsGenieAPIURL = "https://api.opsgenie.com/v1.1/json/schedule/whoIsOnCall?apiKey=%s&name=%s"
+	opsGenieAPIURL = "https://api.opsgenie.com/v2/schedules/%s/on-calls?scheduleIdentifierType=name&flat=true"
 )
 
 type genieRorationJSON struct {
-	Participants []struct {
-		Name string `json:"name"`
-	} `json:"participants"`
+	Data struct {
+		OnCallRecipients []string `json:"onCallRecipients"`
+	} `json:"data"`
 }
 
 func whoIsOnCallOpsGenie(token string, schedule string, admins map[string]adminAccount) {
 	var parsedJSON genieRorationJSON
 
-	apiURL := fmt.Sprintf(opsGenieAPIURL, url.QueryEscape(token), url.QueryEscape(schedule))
+	apiURL := fmt.Sprintf(opsGenieAPIURL, url.QueryEscape(schedule))
 
-	unparsedJSON, err := httpGet(apiURL)
+	headers := make(map[string]string)
+	headers["Authorization"] = fmt.Sprintf("GenieKey %s", url.QueryEscape(token))
+
+	unparsedJSON, err := httpGet(apiURL, headers)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -36,14 +39,14 @@ func whoIsOnCallOpsGenie(token string, schedule string, admins map[string]adminA
 
 	if *debug {
 		log.Println("DEBUG: Raw data from OpsGenie")
-		log.Println("DEBUG:", parsedJSON.Participants)
+		log.Println("DEBUG:", parsedJSON.Data.OnCallRecipients)
 	}
 
 	for emailFromConfig, dataFromConfig := range admins {
 		oncall := false
 
-		for _, adminFromGenie := range parsedJSON.Participants {
-			if emailFromConfig == adminFromGenie.Name {
+		for _, adminFromGenie := range parsedJSON.Data.OnCallRecipients {
+			if emailFromConfig == adminFromGenie {
 				oncall = true
 			}
 		}

@@ -30,7 +30,7 @@ func getSlackUserStatus(token string, user string) (slackStatus, error) {
 	var parsedJSON slackProfileJSON
 	apiURL := fmt.Sprintf(slackAPIURL, url.QueryEscape(token), url.QueryEscape(user))
 
-	unparsedJSON, err := httpGet(apiURL)
+	unparsedJSON, err := httpGet(apiURL, nil)
 	if err != nil {
 		return slackStatus{"err", "err"}, err
 	}

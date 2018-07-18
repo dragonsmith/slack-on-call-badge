@@ -56,7 +56,7 @@ func checkAndUpdate() {
 }
 
 func main() {
-	kingpin.Version("0.0.2")
+	kingpin.Version("0.0.3")
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
 
